@@ -5,7 +5,8 @@ pipeline {
     }
 
      environment {
-    Name  = "Vinayak"
+         
+          Name  = "Vinayak"
    }
 
    agent {
@@ -23,45 +24,46 @@ pipeline {
             steps{
                 sh 'mvn clean package'
                 echo " HellO $Name ${params.LASTNAME}"
-            }
-
-             environment {
-                   Name  = "Vinayak"
+                
                  }
 
-
-              }
-         
-         stage('test'){
+        stage('test'){
 
             parallel{
 
-                stage('TestA'){
-                    steps{
-                        echo "this is test A"
-                    }
+                stage('this is testA'){
 
-                stage( 'TestB'){
                     steps{
-                        echo " this is test B"
+                        echo "this is test A "
                     }
                 }
+
+                stage('this is testB'){
+
+                    steps{
+
+                        echo "this is test b"
+                    } 
                 }
             }
+        }
 
-             post {
+      post {
                 success {
                    
                    archiveArtifacts artifacts: '**/target/*.war'
                 }
              }
+              
 
    }
 
+
     }
+}
 
        
-        }
+        
         
     
 
