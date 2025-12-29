@@ -1,70 +1,51 @@
 pipeline {
-   
-   parameters {
-     string defaultValue: 'Khot', name: 'LASTNAME'
+
+    agent {
+        label 'dev-server'
     }
 
-     environment {
-         
-          Name  = "Vinayak"
-   }
+    parameters {
+        string(name: 'LASTNAME', defaultValue: 'Khot')
+    }
 
-   agent {
-      label 'dev-server'
-     }
+    environment {
+        Name = "Vinayak"
+    }
 
     tools {
-       maven 'MyMaven'
+        maven 'MyMaven'
     }
 
     stages {
 
-        stage('build'){
-            
-            steps{
+        stage('build') {
+            steps {
                 sh 'mvn clean package'
-                echo " HellO $Name ${params.LASTNAME}"
-                
-                 }
-
-        stage('test'){
-
-            parallel{
-
-                stage('this is testA'){
-
-                    steps{
-                        echo "this is test A "
-                    }
-                }
-
-                stage('this is testB'){
-
-                    steps{
-
-                        echo "this is test b"
-                    } 
-                }
+                echo "Hello $Name ${params.LASTNAME}"
             }
         }
 
-      post {
-                success {
-                   
-                   archiveArtifacts artifacts: '**/target/*.war'
+        stage('test') {
+            parallel {
+
+                stage('this is testA') {
+                    steps {
+                        echo "this is test A"
+                    }
                 }
-             }
-              
 
-   }
-
-
+                stage('this is testB') {
+                    steps {
+                        echo "this is test B"
+                    }
+                }
+            }
+        }
     }
-}
 
-       
-        
-        
-    
-
-
+    post {
+        success {
+            archiveArtifacts artifacts: '**/target/*.war'
+        }
+    }
+} 
