@@ -1,5 +1,13 @@
 pipeline {
    
+   parameters {
+     string defaultValue: 'Khot', name: 'LASTNAME'
+    }
+
+     environment {
+    Name  = "Vinayak"
+   }
+
    agent {
       label 'dev-server'
      }
@@ -14,7 +22,7 @@ pipeline {
             
             steps{
                 sh 'mvn clean package'
-
+                echo " HellO $Name ${params.LASTNAME}"
             }
 
             post {
