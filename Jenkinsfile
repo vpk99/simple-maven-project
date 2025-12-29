@@ -25,19 +25,44 @@ pipeline {
                 echo " HellO $Name ${params.LASTNAME}"
             }
 
-            post {
-            success {
+             environment {
+                   Name  = "Vinayak"
+                 }
+
+
+              }
+         
+         stage('test'){
+
+            parallel{
+
+                stage('TestA'){
+                    steps{
+                        echo "this is test A"
+                    }
+
+                stage( 'TestB'){
+                    steps{
+                        echo " this is test B"
+                    }
+                }
+                }
+            }
+
+             post {
+                success {
                    
                    archiveArtifacts artifacts: '**/target/*.war'
-               }
+                }
              }
 
+   }
 
-        }
+    }
 
        
         }
-        }
+        
     
 
 
