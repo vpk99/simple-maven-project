@@ -5,7 +5,8 @@ pipeline {
     }
 
     parameters {
-        string(name: 'LASTNAME', defaultValue: 'Khot')
+          choice choices: ['dev, prod '], name: 'select_environment'
+
     }
 
     environment {
@@ -20,32 +21,58 @@ pipeline {
 
         stage('build') {
             steps {
-                sh 'mvn clean package'
-                echo "Hello $Name ${params.LASTNAME}"
+                sh 'mvn clean package -DskipTests=true'
+                
             }
         }
 
         stage('test') {
             parallel {
-
+                agent{ label 'dev-server'}
                 stage('this is testA') {
                     steps {
                         echo "this is test A"
+                        sh "mvn test"
                     }
                 }
-
+                agent {label ' dev-server'}
                 stage('this is testB') {
                     steps {
                         echo "this is test B"
+                        sh "mvn test"
                     }
                 }
             }
         }
-    }
-
+    
+    
     post {
         success {
-            archiveArtifacts artifacts: '**/target/*.war'
+            dir("webap/target"){
+                stash name: "maven build" , includes: " **.war"
+            }
         }
     }
+
+     stage('deploy-dev'){
+
+        when {expression {params.select_environment = = 'dev'} 
+          beforeAgent true }
+          agent { label 'dev-server'}
+          steps {
+            dir("/var/www/html"){
+                unstash: "maven build"
+            }
+            sh """
+            cd /var/www/html
+            jar -xvf webapp.war 
+            """
+          }
+     }
+    
+   
+   
+    }
+
+    
 } 
