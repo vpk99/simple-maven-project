@@ -5,7 +5,7 @@ pipeline {
     }
 
     parameters {
-          choice choices: ['dev, prod '], name: 'select_environment'
+          choice choices: ['dev', 'prod '], name: 'select_environment'
 
     }
 
@@ -28,15 +28,17 @@ pipeline {
 
         stage('test') {
             parallel {
-                agent{ label 'dev-server'}
+               
                 stage('this is testA') {
+                    agent{ label 'dev-server'}
                     steps {
                         echo "this is test A"
                         sh "mvn test"
                     }
                 }
-                agent {label ' dev-server'}
+                
                 stage('this is testB') {
+                    agent{ label 'dev-server'}
                     steps {
                         echo "this is test B"
                         sh "mvn test"
@@ -49,19 +51,19 @@ pipeline {
     post {
         success {
             dir("webap/target"){
-                stash name: "maven build" , includes: " **.war"
+                stash name: "maven-build" , includes: " **.war"
             }
         }
     }
 
      stage('deploy-dev'){
 
-        when {expression {params.select_environment = = 'dev'} 
+        when {expression {params.select_environment == 'dev'} 
           beforeAgent true }
           agent { label 'dev-server'}
           steps {
             dir("/var/www/html"){
-                unstash: "maven build"
+                unstash: "maven-build"
             }
             sh """
             cd /var/www/html
