@@ -45,8 +45,7 @@ pipeline {
                     }
                 }
             }
-        }
-            
+        
             post {
             success {
             dir("webapp/target"){
@@ -54,27 +53,28 @@ pipeline {
             }
         }
     }
+
+  }
+            
+           
         
         stage('prod_deploy'){
            
-            when{ expression{ params.select_environment == 'dev'}
-            { beforeAgent true}
-            agent{ label 'dev-server'}
+         when { expression {params.select_environment == 'prod'}
+        beforeAgent true}
+        agent { label 'dev-server' }
+        
+        steps{
+            dir("/var/www/html"){
 
-            steps{
-
-                dir("/var/www/html"){
-                    unstash "maven-build"
-                }
-               
-                sh """
-                cd /var/www/html
-                jar -xvf webapp.war
-
-                """
+                unstash "maven-build"
             }
 
-            }
+            sh """
+            cd /var/www/html
+            jar -xvf webapp.war
+            """
+        }
         }
 
     
