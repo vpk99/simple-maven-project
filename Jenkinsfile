@@ -5,7 +5,7 @@ pipeline {
     }
 
     parameters {
-          choice choices: ['dev', 'prod '], name: 'select_environment'
+          choice choices: ['dev','prod '], name: 'select_environment'
 
     }
 
@@ -46,35 +46,18 @@ pipeline {
                 }
             }
         }
-    
-    
-    post {
-        success {
-            dir("webap/target"){
+            
+            post {
+            success {
+            dir("webapp/target"){
                 stash name: "maven-build" , includes: " **.war"
             }
         }
     }
-
-     stage('deploy-dev'){
-
-        when {expression {params.select_environment == 'dev'} 
-          beforeAgent true }
-          agent { label 'dev-server'}
-          steps {
-            dir("/var/www/html"){
-                unstash: "maven-build"
-            }
-            sh """
-            cd /var/www/html
-            jar -xvf webapp.war 
-            """
-          }
-     }
     
-   
-   
     }
+
+    
 
     
 } 
