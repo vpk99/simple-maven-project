@@ -30,8 +30,9 @@ pipeline{
 
         parallel{
             
-            agent{ label 'devserver'}
+           
             stage('testA'){
+                 agent{ label 'devserver'}
                 steps{
                     echo 'this is test A'
                     sh 'mvn test'
