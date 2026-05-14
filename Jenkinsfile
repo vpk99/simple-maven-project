@@ -12,9 +12,12 @@ pipeline{
         
         stage('build'){
           steps{
-            sh 'mvn build package'
+            sh 'mvn clean package'
           }
         }
+    }
+
+
 
     post {
          
@@ -23,6 +26,6 @@ pipeline{
       }
    }
 
-    }
+    
 
-}
+} 
