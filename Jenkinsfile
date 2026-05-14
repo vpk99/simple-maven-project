@@ -9,23 +9,27 @@ pipeline{
     }
 
     stages{
-        
-        stage('build'){
-          steps{
+
+      stage('build'){
+ 
+        steps{
             sh 'mvn clean package'
-          }
         }
-    }
-
-
-
-    post {
-         
-          success {
-              archiveArtifacts artifacts: '**/target/*.war'
+      
+        post{
+            sucess{
+                archiveArtifacts artifacts: '**/target/*.war'
+            }
+        }
+      
+      
       }
-   }
+
+
 
     
 
-} 
+}
+
+
+}
