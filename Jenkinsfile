@@ -1,114 +1,25 @@
-pipeline {
+pipeline{
 
-    agent {
+    agent{
         label 'dev-server'
     }
 
-    parameters {
-          choice choices: ['dev','prod '], name: 'select_environment'
-
-    }
-
-    environment {
-        Name = "Vinayak"
-    }
-
     tools {
-        maven 'MyMaven'
+     maven 'mymaven'
     }
 
-    stages {
+    stages{
 
-        stage('build') {
-            steps {
-                sh 'mvn clean package -DskipTests=true'
-                
-            }
+        stage('build'){
+           sh 'mvn clean package'
         }
 
-        stage('test') {
-            parallel {
-               
-                stage('this is testA') {
-                    agent{ label 'dev-server'}
-                    steps {
-                        echo "this is test A"
-                        sh "mvn test"
-                    }
-                }
-                
-                stage('this is testB') {
-                    agent{ label 'dev-server'}
-                    steps {
-                        echo "this is test B"
-                        sh "mvn test"
-                    }
-                }
-            }
-        
-            post {
-            success {
-            dir("webapp/target"){
-                stash name: "maven-build" , includes: " *.war"
-            }
-        }
+        post {
+        success {
+              archiveArtifacts artifacts: '**/target/*.war'
+      }
+   }
+
     }
 
-  }
-            
-           
-        
-        stage('prod_deploy'){
-           
-         when { expression {params.select_environment == 'prod'}
-        beforeAgent true}
-        agent { label 'dev-server' }
-        
-        steps{
-            dir("/var/www/html"){
-
-                unstash "maven-build"
-            }
-
-            sh """
-            cd /var/www/html
-            jar -xvf webapp.war
-            """
-        }
-        }
-
-        stage('prod-deploy'){
-
-             when { expression {params.select_environment == 'prod'}
-        beforeAgent true}
-        agent { label 'prod-server' }
-        steps
-        {
-             timeout(time:5, unit:'DAYS'){
-                input message: 'Deployment approved?'
-             }
-            dir("/var/www/html")
-            {
-                unstash "maven-build"
-            }
-            sh """
-            cd /var/www/html/
-            jar -xvf webapp.war
-            """
-        }  
-        }
-        
-   
-   
-   
-   
-   
-   
-   
-    }
-
-
-    
-
-    
-} 
+}
