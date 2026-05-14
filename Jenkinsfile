@@ -16,14 +16,35 @@ pipeline{
             sh 'mvn clean package'
         }
       
-        post{
-            success{
-                archiveArtifacts artifacts: '**/target/*.war'
-            }
-        }
+    
       
       
       }
+
+     stage{
+
+        parallel{
+            stage('testA'){
+                steps{
+                    echo 'this is test A'
+                }
+            }
+
+            stage('testb'){
+                steps{
+                    echo 'this is test B'
+                }
+            }
+        }
+
+            post {
+         
+            success {
+              archiveArtifacts artifacts: '**/target/*.war'
+            }
+          }
+
+     }
 
 
 
