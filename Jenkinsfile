@@ -8,12 +8,17 @@ pipeline{
      maven 'mymaven'
     }
 
+    parameters {
+      choice choices: ['dev ', 'prod'], name: 'select_env'
+    }
+
+
     stages{
 
       stage('build'){
  
         steps{
-            sh 'mvn clean package'
+            sh 'mvn clean package -DskipTests=true'
         }
       
     
@@ -24,15 +29,21 @@ pipeline{
      stage('test'){
 
         parallel{
+            
+            agent{ label 'devserver'}
             stage('testA'){
                 steps{
                     echo 'this is test A'
+                    sh 'mvn test'
                 }
             }
 
             stage('testb'){
+               
+                agent{label 'devserver'}
                 steps{
                     echo 'this is test B'
+                    sh 'mvn test'
                 }
             }
         }
@@ -40,11 +51,33 @@ pipeline{
             post {
          
             success {
-              archiveArtifacts artifacts: '**/target/*.war'
+              
+              dir("/webapp/target"){
+
+                stash name: "maven-build" includes: "*.war"
+              }
             }
           }
 
      }
+
+      stage('deploy-dev'){
+        when{expression {params.select_env == 'dev'} 
+        beforeAgent true}
+        agent{label 'devserver'}
+
+        steps
+        {
+            dir("/var/www/html"){
+
+                unstash "maven-build"
+            }
+            sh """
+            cd /var/www/html/
+            jar -xvf webapp.war
+            """
+        }
+      }
 
 
 
