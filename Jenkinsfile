@@ -32,7 +32,7 @@ pipeline{
             
            
             stage('testA'){
-                 agent{ label 'devserver'}
+                 agent{ label 'dev-server'}
                 steps{
                     echo 'this is test A'
                     sh 'mvn test'
@@ -41,7 +41,7 @@ pipeline{
 
             stage('testb'){
                
-                agent{label 'devserver'}
+                agent{label 'dev-server'}
                 steps{
                     echo 'this is test B'
                     sh 'mvn test'
