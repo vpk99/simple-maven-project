@@ -65,7 +65,7 @@ pipeline{
       stage('deploy-dev'){
         when{expression {params.select_env == 'dev'} 
         beforeAgent true}
-        agent{label 'devserver'}
+        agent{label 'dev-server'}
 
         steps
         {
