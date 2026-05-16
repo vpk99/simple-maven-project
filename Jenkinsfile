@@ -53,7 +53,7 @@ pipeline{
          
             success {
               
-              dir("/webapp/target"){
+              dir("webapp/target"){
 
                 stash name: "maven-build" , includes:"*.war"
               }
