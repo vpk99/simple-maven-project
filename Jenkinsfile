@@ -9,7 +9,7 @@ pipeline{
     }
 
     parameters {
-      choice choices: ['dev ', 'prod'], name: 'select_env'
+      choice choices: ['dev', 'prod'], name: 'select_env'
     }
 
 
